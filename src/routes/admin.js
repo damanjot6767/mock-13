@@ -4,12 +4,24 @@ const UserModel = require('../models/user.model');
 const AdminAndUser = express.Router();
 
 
-//get users and admin profile
-AdminAndUser.get('/:id',async function(req, res) {
-    let {id} = req.params;
+//get all jobs
+AdminAndUser.get('/all',async function(req, res) {
+    try{
+        let users = await JobModel.find({});
+        res.send(users)
+        return;
+    }
+    catch(err){
+        res.send(err.message)
+    } 
+});
+
+AdminAndUser.get('/apply/:id',async function(req, res) {
+    let{id}=req.params;
     try{
         let users = await UserModel.findOne({_id:id});
-        res.send(users)
+        res.send(users.applied)
+        
         return;
     }
     catch(err){
@@ -36,7 +48,7 @@ AdminAndUser.patch("/updatejob/:id",async function(req, res) {
     const{id} = req.params;
     const {position} = req.body;
     try{
-        let jobs = await JobModel.findByIdAndUpdate({_id:id},{position:position});
+        let jobs = await JobModel.findByIdAndUpdate({_id:val},{position:position});
         res.send({status:"job update successfully!"})
         return;
     }
@@ -60,10 +72,10 @@ AdminAndUser.delete('/deletejob/:id',async(req,res)=>{
 
 //job applied by user
 AdminAndUser.post('/applyjob/:id',async(req,res)=>{
-    let {id} = req.params;
+    let {val} = req.params;
     let {userid}=req.body;
     try{
-        let job = await JobModel.findOne({_id:id});
+        let job = await JobModel.findOne({_id:val});
         let user = await UserModel.findOne({_id:userid});
         let newData = user.applied;
         newData.push(job);

@@ -21,7 +21,7 @@ Auth.post('/signup', async(req, res)=> {
         const password_hash = await argon2.hash(password)
         let newUser= new UserModel({fullname,email,password:password_hash,role});
         await newUser.save();
-        res.send("signing up successfully");
+        res.send({status:"signing up successfully"});
     } catch (error) {
         res.send(error.message)
     }
